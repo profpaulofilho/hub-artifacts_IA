@@ -1,0 +1,743 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Hub de Agentes de IA para Docentes · SENAI Bahia</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%2307111f'/%3E%3Ctext x='50' y='60' font-size='52' text-anchor='middle' fill='%234f8cff'%3E%F0%9F%A4%96%3C/text%3E%3C/svg%3E" />
+  <style>
+    :root {
+      --bg: #07111f;
+      --bg-soft: #0d1b2e;
+      --card: rgba(255,255,255,0.08);
+      --card-2: rgba(255,255,255,0.05);
+      --line: rgba(255,255,255,0.12);
+      --text: #e8eefc;
+      --muted: #9eb0d1;
+      --primary: #4f8cff;
+      --primary-2: #7c3aed;
+      --accent: #c00000;
+      --success: #10b981;
+      --shadow: 0 20px 60px rgba(0,0,0,.35);
+      --radius: 22px;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background:
+        radial-gradient(circle at top left, rgba(79,140,255,.18), transparent 32%),
+        radial-gradient(circle at top right, rgba(124,58,237,.16), transparent 24%),
+        linear-gradient(180deg, #07111f 0%, #0a1527 50%, #09121f 100%);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    a { color: inherit; text-decoration: none; }
+
+    .container {
+      width: min(1180px, calc(100% - 32px));
+      margin: 0 auto;
+    }
+
+    .hero {
+      padding: 32px 0 24px;
+    }
+
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      padding: 14px 18px;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,.04);
+      border-radius: 18px;
+      backdrop-filter: blur(14px);
+      box-shadow: var(--shadow);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .logo {
+      width: 52px;
+      height: 52px;
+      border-radius: 16px;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(135deg, var(--primary), var(--primary-2));
+      box-shadow: 0 10px 30px rgba(79,140,255,.35);
+      font-size: 24px;
+    }
+
+    .brand h1 {
+      margin: 0;
+      font-size: clamp(20px, 2.4vw, 28px);
+      line-height: 1.1;
+    }
+
+    .brand p {
+      margin: 4px 0 0;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .tag {
+      padding: 10px 14px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.06);
+      border: 1px solid var(--line);
+      color: var(--muted);
+      font-size: 13px;
+      white-space: nowrap;
+    }
+
+    .hero-grid {
+      margin-top: 22px;
+      display: grid;
+      grid-template-columns: 1.2fr .8fr;
+      gap: 20px;
+    }
+
+    .hero-card, .notice-card, .section-box {
+      border: 1px solid var(--line);
+      background: linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.04));
+      border-radius: 28px;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(16px);
+    }
+
+    .hero-card {
+      padding: 34px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-card::after {
+      content: "";
+      position: absolute;
+      inset: auto -40px -50px auto;
+      width: 180px;
+      height: 180px;
+      background: radial-gradient(circle, rgba(79,140,255,.28), transparent 70%);
+      pointer-events: none;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: rgba(79,140,255,.12);
+      border: 1px solid rgba(79,140,255,.28);
+      color: #bfd5ff;
+      font-size: 13px;
+      margin-bottom: 18px;
+    }
+
+    .hero h2 {
+      margin: 0;
+      font-size: clamp(32px, 5vw, 52px);
+      line-height: 1.02;
+      max-width: 12ch;
+    }
+
+    .hero-copy {
+      margin: 16px 0 0;
+      color: var(--muted);
+      font-size: 17px;
+      line-height: 1.7;
+      max-width: 62ch;
+    }
+
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 24px;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      padding: 14px 18px;
+      border-radius: 16px;
+      border: 1px solid var(--line);
+      transition: .22s ease;
+      font-weight: 700;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--primary), var(--primary-2));
+      border: none;
+      box-shadow: 0 14px 36px rgba(79,140,255,.35);
+    }
+
+    .btn-secondary {
+      background: rgba(255,255,255,.05);
+      color: var(--text);
+    }
+
+    .btn:hover, .course-card:hover, .pill:hover {
+      transform: translateY(-2px);
+    }
+
+    .notice-card {
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      justify-content: space-between;
+    }
+
+    .notice-card h3,
+    .section-head h3 {
+      margin: 0;
+      font-size: 22px;
+    }
+
+    .notice-card p,
+    .section-head p,
+    .mini p {
+      margin: 8px 0 0;
+      color: var(--muted);
+      line-height: 1.65;
+    }
+
+    .claude-box {
+      padding: 18px;
+      border-radius: 20px;
+      background: linear-gradient(135deg, rgba(192,0,0,.20), rgba(255,255,255,.05));
+      border: 1px solid rgba(255,255,255,.12);
+    }
+
+    .claude-label {
+      display: inline-block;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      color: #ffd8d8;
+      margin-bottom: 8px;
+      font-weight: 700;
+    }
+
+    .claude-box strong {
+      display: block;
+      font-size: 18px;
+      margin-bottom: 8px;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+    }
+
+    .mini {
+      padding: 16px;
+      border-radius: 18px;
+      background: var(--card-2);
+      border: 1px solid var(--line);
+    }
+
+    .mini strong {
+      font-size: 20px;
+      display: block;
+    }
+
+    section {
+      padding: 10px 0 30px;
+    }
+
+    .section-box {
+      padding: 26px;
+    }
+
+    .section-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: end;
+      gap: 16px;
+      margin-bottom: 22px;
+      flex-wrap: wrap;
+    }
+
+    .pills {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .pill {
+      padding: 10px 14px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,.05);
+      color: var(--muted);
+      font-size: 13px;
+      transition: .2s ease;
+    }
+
+    .courses-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .course-card {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      min-height: 220px;
+      padding: 20px;
+      border-radius: 24px;
+      border: 1px solid var(--line);
+      background: linear-gradient(180deg, rgba(255,255,255,.09), rgba(255,255,255,.04));
+      transition: .22s ease;
+      overflow: hidden;
+    }
+
+    .course-card::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(79,140,255,.16), transparent 45%, rgba(124,58,237,.12));
+      opacity: 0;
+      transition: .22s ease;
+    }
+
+    .course-card:hover::before { opacity: 1; }
+
+    .course-top, .course-bottom {
+      position: relative;
+      z-index: 1;
+    }
+
+    .icon-wrap {
+      width: 56px;
+      height: 56px;
+      border-radius: 18px;
+      display: grid;
+      place-items: center;
+      font-size: 24px;
+      background: rgba(255,255,255,.10);
+      border: 1px solid rgba(255,255,255,.12);
+    }
+
+    .course-card h4 {
+      margin: 12px 0 8px;
+      font-size: 20px;
+      line-height: 1.2;
+    }
+
+    .course-card p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.6;
+      font-size: 14px;
+    }
+
+    .status {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 700;
+      width: fit-content;
+    }
+
+    .status.live {
+      background: rgba(16,185,129,.12);
+      color: #b7f7dc;
+      border: 1px solid rgba(16,185,129,.28);
+    }
+
+    .status.soon {
+      background: rgba(255,255,255,.07);
+      color: #d0daf0;
+      border: 1px solid rgba(255,255,255,.12);
+    }
+
+    .cta-row {
+      margin-top: auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      color: #dbe7ff;
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .empty-card {
+      border-style: dashed;
+    }
+
+    footer {
+      padding: 8px 0 40px;
+    }
+
+    .footer-box {
+      padding: 20px 22px;
+      border-radius: 22px;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,.04);
+      color: var(--muted);
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .footer-box strong { color: var(--text); }
+
+    @media (max-width: 980px) {
+      .hero-grid, .courses-grid { grid-template-columns: 1fr 1fr; }
+    }
+
+    @media (max-width: 760px) {
+      .topbar, .hero-grid, .courses-grid, .stats { grid-template-columns: 1fr; display: grid; }
+      .topbar { gap: 14px; }
+      .brand { align-items: flex-start; }
+      .tag { white-space: normal; }
+      .hero-card, .notice-card, .section-box { border-radius: 24px; }
+      .hero-card { padding: 24px; }
+      .section-box { padding: 20px; }
+    }
+  </style>
+</head>
+<body>
+  <header class="hero">
+    <div class="container">
+      <div class="topbar">
+        <div class="brand">
+          <div class="logo">🤖</div>
+          <div>
+            <h1>Hub de Agentes de IA para Docentes</h1>
+            <p>SENAI Bahia · acesso rápido aos agentes por curso técnico</p>
+          </div>
+        </div>
+        
+      </div>
+
+      <div class="hero-grid">
+        <div class="hero-card">
+          <div class="eyebrow">⚡ Plataforma docente inteligente</div>
+          <h2>Escolha a área técnica e entre no agente certo.</h2>
+          <p class="hero-copy">
+            Este hub centraliza os agentes de IA para docentes em uma interface moderna, visual e simples de navegar.
+            Cada card leva para uma página específica de curso técnico ou conjunto de cursos técnicos.
+          </p>
+          <div class="hero-actions">
+            <a class="btn btn-primary" href="#areas">Explorar áreas disponíveis</a>
+          </div>
+        </div>
+
+        <aside class="notice-card" id="requisitos">
+          <div>
+            <h3>Antes de começar</h3>
+            <p>
+              Para utilizar os agentes, o usuário precisa ter uma <strong>conta no Claude IA</strong>.
+              Esse requisito deve estar visível no hub para evitar dúvidas no acesso.
+            </p>
+          </div>
+
+          <div class="claude-box">
+            <span class="claude-label">Requisito obrigatório</span>
+            <strong>É necessário possuir conta ativa no Claude IA.</strong>
+            <span>Sem esse acesso, os links dos agentes podem não funcionar corretamente para o docente.</span>
+          </div>
+
+          <div class="stats">
+            <div class="mini">
+              <strong>12</strong>
+              <p>áreas no hub</p>
+            </div>
+            <div class="mini">
+              <strong>7</strong>
+              <p>novas áreas em breve</p>
+            </div>
+            <div class="mini">
+              <strong>100%</strong>
+              <p>layout responsivo</p>
+            </div>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section id="areas">
+      <div class="container">
+        <div class="section-box">
+          <div class="section-head">
+            <div>
+              <h3>Áreas e cursos técnicos</h3>
+              <p>Cards modernos para acesso direto às páginas já criadas e placeholders para os próximos cursos.</p>
+            </div>
+            <div class="pills">
+              <span class="pill">Design moderno</span>
+              <span class="pill">GitHub Pages</span>
+              <span class="pill">Expansível</span>
+            </div>
+          </div>
+
+          <div class="courses-grid">
+            <a class="course-card" href="https://claude.ai/public/artifacts/db1d0542-241f-439e-9aa4-f48a2dc88bfa" target="_blank" rel="noopener noreferrer">
+              <div class="course-top">
+                <div class="icon-wrap">🍽️</div>
+                <h4>Alimentos e Bebidas</h4>
+                <p>Hub com cursos da área de alimentos, panificação, confeitaria, gastronomia e correlatos.</p>
+              </div>
+              <div class="course-bottom">
+                <span class="status live">● Disponível agora</span>
+                <div class="cta-row"><span>Acessar página</span><span>→</span></div>
+              </div>
+            </a>
+
+            <a class="course-card" href="https://claude.ai/public/artifacts/9aa223e9-a08f-4e0d-b743-5e3cc6c3587e" target="_blank" rel="noopener noreferrer">
+              <div class="course-top">
+                <div class="icon-wrap">⚙️</div>
+                <h4>Automação e Mecatrônica</h4>
+                <p>Página voltada aos agentes da área de automação industrial e mecatrônica.</p>
+              </div>
+              <div class="course-bottom">
+                <span class="status live">● Disponível agora</span>
+                <div class="cta-row"><span>Acessar página</span><span>→</span></div>
+              </div>
+            </a>
+
+            <a class="course-card" href="https://claude.ai/public/artifacts/91c2270f-cd56-4ab4-9002-335606b8a963" target="_blank" rel="noopener noreferrer">
+              <div class="course-top">
+                <div class="icon-wrap">🚗</div>
+                <h4>Automotiva</h4>
+                <p>Acesso aos agentes para cursos técnicos da área automotiva e manutenção veicular.</p>
+              </div>
+              <div class="course-bottom">
+                <span class="status live">● Disponível agora</span>
+                <div class="cta-row"><span>Acessar página</span><span>→</span></div>
+              </div>
+            </a>
+
+            <a class="course-card" href="https://claude.ai/public/artifacts/74171372-1fed-4daa-8d55-dcfb7436bce0" target="_blank" rel="noopener noreferrer">
+              <div class="course-top">
+                <div class="icon-wrap">👞</div>
+                <h4>Couro e Calçados</h4>
+                <p>Ambiente para docentes dos cursos técnicos ligados a calçados, design e curtimento.</p>
+              </div>
+              <div class="course-bottom">
+                <span class="status live">● Disponível agora</span>
+                <div class="cta-row"><span>Acessar página</span><span>→</span></div>
+              </div>
+            </a>
+
+            <a class="course-card" href="https://claude.ai/public/artifacts/c0a4e757-04f9-41ff-8d6b-f9b3cbcc033d" target="_blank" rel="noopener noreferrer">
+              <div class="course-top">
+                <div class="icon-wrap">💻</div>
+                <h4>DS e Informática para Internet</h4>
+                <p>Página para desenvolvimento de sistemas, informática para internet e jogos digitais.</p>
+              </div>
+              <div class="course-bottom">
+                <span class="status live">● Disponível agora</span>
+                <div class="cta-row"><span>Acessar página</span><span>→</span></div>
+              </div>
+            </a>
+
+            <a class="course-card" href="https://claude.ai/public/artifacts/0b0b136d-fa77-4df8-b2c7-a580ae043c5f" target="_blank" rel="noopener noreferrer">
+              <div class="course-top">
+                <div class="icon-wrap">🏗️</div>
+                <h4>Edificações</h4>
+                <p>Área com agentes para edificações, modelagem digital da construção civil e carpintaria.</p>
+              </div>
+              <div class="course-bottom">
+                <span class="status live">● Disponível agora</span>
+                <div class="cta-row"><span>Acessar página</span><span>→</span></div>
+              </div>
+            </a>
+
+            <a class="course-card" href="https://claude.ai/public/artifacts/ed994090-fe01-4af2-9a70-c915870986b4" target="_blank" rel="noopener noreferrer">
+              <div class="course-top">
+                <div class="icon-wrap">🔌</div>
+                <h4>Eletroeletrônica</h4>
+                <p>Hub para cursos de eletroeletrônica, eletrônica e equipamentos biomédicos.</p>
+              </div>
+              <div class="course-bottom">
+                <span class="status live">● Disponível agora</span>
+                <div class="cta-row"><span>Acessar página</span><span>→</span></div>
+              </div>
+            </a>
+
+            <a class="course-card" href="https://claude.ai/public/artifacts/4e3accbb-5359-4978-9665-ea2b8c031052" target="_blank" rel="noopener noreferrer">
+              <div class="course-top">
+                <div class="icon-wrap">🌱</div>
+                <h4>Energias Renováveis</h4>
+                <p>Entrada dedicada à área de sistemas de energia renovável e conteúdos relacionados.</p>
+              </div>
+              <div class="course-bottom">
+                <span class="status live">● Disponível agora</span>
+                <div class="cta-row"><span>Acessar página</span><span>→</span></div>
+              </div>
+            </a>
+
+            <a class="course-card" href="https://claude.ai/public/artifacts/2ea106de-11cf-4f20-861c-5e8fcb2d9e92" target="_blank" rel="noopener noreferrer">
+              <div class="course-top">
+                <div class="icon-wrap">📈</div>
+                <h4>Gestão</h4>
+                <p>Hub para administração, qualidade, PCP e comércio exterior.</p>
+              </div>
+              <div class="course-bottom">
+                <span class="status live">● Disponível agora</span>
+                <div class="cta-row"><span>Acessar página</span><span>→</span></div>
+              </div>
+            </a>
+
+            <a class="course-card" href="https://claude.ai/public/artifacts/adb484d2-6b6d-496c-99fa-97b5e4cd84ad" target="_blank" rel="noopener noreferrer">
+              <div class="course-top">
+                <div class="icon-wrap">🎨</div>
+                <h4>Gráfica e Mídias</h4>
+                <p>Agentes voltados para design gráfico, multimídia e processos gráficos.</p>
+              </div>
+              <div class="course-bottom">
+                <span class="status live">● Disponível agora</span>
+                <div class="cta-row"><span>Acessar página</span><span>→</span></div>
+              </div>
+            </a>
+
+            <a class="course-card" href="https://claude.ai/public/artifacts/e6c7c9de-22ec-44d6-a936-3d34ade959d5" target="_blank" rel="noopener noreferrer">
+              <div class="course-top">
+                <div class="icon-wrap">📦</div>
+                <h4>Logística</h4>
+                <p>Página dedicada aos agentes de IA para docentes da área de logística.</p>
+              </div>
+              <div class="course-bottom">
+                <span class="status live">● Disponível agora</span>
+                <div class="cta-row"><span>Acessar página</span><span>→</span></div>
+              </div>
+            </a>
+
+            <a class="course-card" href="https://claude.ai/public/artifacts/5ded1d42-4a06-4e32-8d47-0d2498390196" target="_blank" rel="noopener noreferrer">
+              <div class="course-top">
+                <div class="icon-wrap">🌐</div>
+                <h4>Redes de Computadores</h4>
+                <p>Acesso aos agentes de redes, suporte em informática, cibersegurança e informática.</p>
+              </div>
+              <div class="course-bottom">
+                <span class="status live">● Disponível agora</span>
+                <div class="cta-row"><span>Acessar página</span><span>→</span></div>
+              </div>
+            </a>
+
+            <article class="course-card empty-card">
+              <div class="course-top">
+                <div class="icon-wrap">🛠️</div>
+                <h4>Metalmecânica Geral</h4>
+                <p>Espaço reservado para futura página de agentes da área.</p>
+              </div>
+              <div class="course-bottom">
+                <span class="status soon">Em breve</span>
+                <div class="cta-row"><span>Adicionar depois</span><span>+</span></div>
+              </div>
+            </article>
+
+            <article class="course-card empty-card">
+              <div class="course-top">
+                <div class="icon-wrap">🛢️</div>
+                <h4>Petróleo e Gás</h4>
+                <p>Placeholder para publicação futura com os respectivos agentes docentes.</p>
+              </div>
+              <div class="course-bottom">
+                <span class="status soon">Em breve</span>
+                <div class="cta-row"><span>Adicionar depois</span><span>+</span></div>
+              </div>
+            </article>
+
+            <article class="course-card empty-card">
+              <div class="course-top">
+                <div class="icon-wrap">🧪</div>
+                <h4>Química</h4>
+                <p>Card reservado para os cursos técnicos e agentes da área química.</p>
+              </div>
+              <div class="course-bottom">
+                <span class="status soon">Em breve</span>
+                <div class="cta-row"><span>Adicionar depois</span><span>+</span></div>
+              </div>
+            </article>
+
+            <article class="course-card empty-card">
+              <div class="course-top">
+                <div class="icon-wrap">❄️</div>
+                <h4>Refrigeração e Climatização</h4>
+                <p>Pronto para receber a futura página da área e seus respectivos agentes.</p>
+              </div>
+              <div class="course-bottom">
+                <span class="status soon">Em breve</span>
+                <div class="cta-row"><span>Adicionar depois</span><span>+</span></div>
+              </div>
+            </article>
+
+            <article class="course-card empty-card">
+              <div class="course-top">
+                <div class="icon-wrap">🦺</div>
+                <h4>Segurança do Trabalho</h4>
+                <p>Área futura para docentes que utilizarão agentes de IA nessa especialidade.</p>
+              </div>
+              <div class="course-bottom">
+                <span class="status soon">Em breve</span>
+                <div class="cta-row"><span>Adicionar depois</span><span>+</span></div>
+              </div>
+            </article>
+
+            <article class="course-card empty-card">
+              <div class="course-top">
+                <div class="icon-wrap">📡</div>
+                <h4>Telecomunicações</h4>
+                <p>Placeholder preparado para receber o link da página quando ela for criada.</p>
+              </div>
+              <div class="course-bottom">
+                <span class="status soon">Em breve</span>
+                <div class="cta-row"><span>Adicionar depois</span><span>+</span></div>
+              </div>
+            </article>
+
+            <article class="course-card empty-card">
+              <div class="course-top">
+                <div class="icon-wrap">🧵</div>
+                <h4>Têxtil e Vestuário</h4>
+                <p>Estrutura pronta para inclusão posterior de novos agentes e cursos técnicos.</p>
+              </div>
+              <div class="course-bottom">
+                <span class="status soon">Em breve</span>
+                <div class="cta-row"><span>Adicionar depois</span><span>+</span></div>
+              </div>
+            </article>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="container">
+      <div class="footer-box" style="justify-content: center; text-align: center;">
+        <div>
+          <strong>Paulo da Silva Filho · Especialista em TI · GEP · SENAI Bahia · 2026</strong><br />
+          paulofilho@fieb.org.br
+        </div>
+      </div>
+    </div>
+  </footer>
+</body>
+</html>
